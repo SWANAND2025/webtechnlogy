@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity Bill Calculator | Java Servlet</title>
+  <meta name="description" content="Responsive Electricity Bill Calculator Web Application built with Java Servlet and modern CSS.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Background decorative glows -->
+  <div class="glow-bg-1"></div>
+  <div class="glow-bg-2"></div>
+
+  <div class="container main-layout">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-icon-box">
+          <span class="bolt-icon">&#9889;</span>
+        </div>
+        <div>
+          <span class="badge badge-accent">Web Technology Assignment 3</span>
+          <h1>Electricity Bill Calculator</h1>
+          <p class="subtitle">High-precision tiered tariff calculation powered by Java Servlet backend</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tariff Rates Overview Cards -->
+    <section class="tariffs-section">
+      <h2 class="section-heading">Active Tariff Slabs &amp; Rate Structure</h2>
+      <div class="tariff-grid">
+        <div class="tariff-card slab-1">
+          <div class="slab-badge">Slab 1</div>
+          <div class="slab-range">First 50 Units</div>
+          <div class="slab-rate">Rs. 3.50 <span>/ unit</span></div>
+          <p class="slab-desc">Applies to 1 &ndash; 50 units consumed</p>
+        </div>
+
+        <div class="tariff-card slab-2">
+          <div class="slab-badge">Slab 2</div>
+          <div class="slab-range">Next 100 Units</div>
+          <div class="slab-rate">Rs. 4.00 <span>/ unit</span></div>
+          <p class="slab-desc">Applies to 51 &ndash; 150 units consumed</p>
+        </div>
+
+        <div class="tariff-card slab-3">
+          <div class="slab-badge">Slab 3</div>
+          <div class="slab-range">Next 100 Units</div>
+          <div class="slab-rate">Rs. 5.20 <span>/ unit</span></div>
+          <p class="slab-desc">Applies to 151 &ndash; 250 units consumed</p>
+        </div>
+
+        <div class="tariff-card slab-4">
+          <div class="slab-badge">Slab 4</div>
+          <div class="slab-range">Above 250 Units</div>
+          <div class="slab-rate">Rs. 6.50 <span>/ unit</span></div>
+          <p class="slab-desc">Applies to any units consumed &gt; 250</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <div class="content-columns">
+      
+      <!-- Calculator Form Section -->
+      <section class="card form-card">
+        <div class="card-header">
+          <h3>Consumer &amp; Consumption Details</h3>
+          <p>Fill in consumer credentials and monthly meter reading</p>
+        </div>
+
+        <!-- Quick Demo Presets -->
+        <div class="quick-presets">
+          <span class="presets-label">Quick Test Cases:</span>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn" onclick="fillTestCase(35, 'Aarav Sharma')">35 Units</button>
+            <button type="button" class="preset-btn" onclick="fillTestCase(120, 'Priya Patel')">120 Units</button>
+            <button type="button" class="preset-btn" onclick="fillTestCase(210, 'Swanand K.')">210 Units</button>
+            <button type="button" class="preset-btn" onclick="fillTestCase(340, 'Vikram Deshmukh')">340 Units</button>
+          </div>
+        </div>
+
+        <!-- The Servlet Form -->
+        <form action="CalculateBill" method="POST" id="billForm" onsubmit="return validateForm()">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="consumerName">Consumer Full Name <span class="req">*</span></label>
+              <input type="text" id="consumerName" name="consumerName" placeholder="e.g. Swanand K." required>
+            </div>
+
+            <div class="form-group">
+              <label for="consumerId">Consumer / Meter ID</label>
+              <input type="text" id="consumerId" name="consumerId" placeholder="e.g. EB-2026-8891">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="connectionType">Connection Category</label>
+              <select id="connectionType" name="connectionType">
+                <option value="Domestic / Residential" selected>Domestic / Residential</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Industrial">Industrial</option>
+                <option value="Agricultural">Agricultural</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="billingMonth">Billing Month</label>
+              <select id="billingMonth" name="billingMonth">
+                <option value="October 2026" selected>October 2026</option>
+                <option value="November 2026">November 2026</option>
+                <option value="December 2026">December 2026</option>
+                <option value="September 2026">September 2026</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group highlight-input">
+            <label for="units">Total Units Consumed (kWh) <span class="req">*</span></label>
+            <div class="input-with-icon">
+              <input type="number" id="units" name="units" step="any" min="0" placeholder="Enter electricity units (e.g. 185)" required oninput="updateLivePreview()">
+              <span class="input-suffix">kWh</span>
+            </div>
+            <small class="field-hint">Enter the total units recorded on your electricity meter.</small>
+            <span id="unitsError" class="field-error"></span>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <span>Calculate Bill (Servlet)</span>
+              <span class="btn-arrow">&rarr;</span>
+            </button>
+            <button type="button" class="btn btn-outline" onclick="resetForm()">Reset Form</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Live Calculation Breakdown Preview Panel -->
+      <aside class="card preview-card">
+        <div class="card-header">
+          <h3>Real-Time Slab Preview</h3>
+          <p>Instant client-side estimate prior to Servlet submission</p>
+        </div>
+
+        <div class="preview-body">
+          <div class="summary-metric">
+            <span class="metric-label">Estimated Bill</span>
+            <div class="metric-value" id="previewTotal">Rs. 0.00</div>
+            <span class="metric-sub" id="previewUnitsCount">For 0 units consumed</span>
+          </div>
+
+          <div class="breakdown-list">
+            <div class="breakdown-item">
+              <div class="item-title">
+                <span class="dot dot-1"></span>
+                <span>Slab 1 (0 &ndash; 50 units @ Rs. 3.50)</span>
+              </div>
+              <span class="item-amount" id="previewSlab1">Rs. 0.00</span>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="item-title">
+                <span class="dot dot-2"></span>
+                <span>Slab 2 (51 &ndash; 150 units @ Rs. 4.00)</span>
+              </div>
+              <span class="item-amount" id="previewSlab2">Rs. 0.00</span>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="item-title">
+                <span class="dot dot-3"></span>
+                <span>Slab 3 (151 &ndash; 250 units @ Rs. 5.20)</span>
+              </div>
+              <span class="item-amount" id="previewSlab3">Rs. 0.00</span>
+            </div>
+
+            <div class="breakdown-item">
+              <div class="item-title">
+                <span class="dot dot-4"></span>
+                <span>Slab 4 (&gt; 250 units @ Rs. 6.50)</span>
+              </div>
+              <span class="item-amount" id="previewSlab4">Rs. 0.00</span>
+            </div>
+          </div>
+
+          <div class="feature-info-box">
+            <div class="info-row">
+              <span class="info-label">Backend Engine:</span>
+              <span class="info-val">Java HttpServlet (POST /CalculateBill)</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Slab Accuracy:</span>
+              <span class="info-val">100% Deterministic Tiered Pricing</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Developed for Web Technology Assignment 3 &bull; Repository: <a href="https://github.com/SWANAND2025/webtechnlogy" target="_blank" rel="noopener">github.com/SWANAND2025/webtechnlogy</a></p>
+    </footer>
+
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+    <display-name>Electricity Bill Calculator Application</display-name>
+    <description>
+        Web Technology Assignment 3: Electricity Bill Calculator using Java Servlet.
+        Tariff Conditions:
+        - First 50 units: Rs. 3.50/unit
+        - Next 100 units (51 - 150): Rs. 4.00/unit
+        - Next 100 units (151 - 250): Rs. 5.20/unit
+        - Above 250 units: Rs. 6.50/unit
+    </description>
+
+    <!-- Welcome File List -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- Servlet Configuration -->
+    <servlet>
+        <servlet-name>ElectricityBillServlet</servlet-name>
+        <servlet-class>com.electricity.ElectricityBillServlet</servlet-class>
+    </servlet>
+
+    <!-- Servlet URL Mapping -->
+    <servlet-mapping>
+        <servlet-name>ElectricityBillServlet</servlet-name>
+        <url-pattern>/CalculateBill</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+</web-app>
