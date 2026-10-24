@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity Bill Calculator | JSP Web Application</title>
+  <meta name="description" content="Responsive tiered electricity bill calculator web application developed using JSP (JavaServer Pages) and modern UI.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* View Switcher Bar */
+    .view-switcher-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .switch-tab {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .switch-tab.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    }
+    .hidden-view {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient background glows -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <div class="container">
+    
+    <!-- Top App Header -->
+    <header class="app-header">
+      <div class="brand-wrapper">
+        <div class="logo-badge">&#9889;</div>
+        <div class="brand-info">
+          <h1>MAHA-VIDYUT BILL CALCULATOR</h1>
+          <p>Official Tariff Billing Portal &bull; Developed using JSP (JavaServer Pages)</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-wt">WT Assignment 6</span>
+        <span class="badge badge-jsp">&lt;jsp:useBean /&gt;</span>
+        <span class="badge badge-success">&#10003; Responsive JSP Application</span>
+      </div>
+    </header>
+
+    <!-- View Switcher -->
+    <div class="view-switcher-bar">
+      <button type="button" class="switch-tab active" id="tabCalculator" onclick="switchView('calculator')">
+        &#128221; Calculator Input Form
+      </button>
+      <button type="button" class="switch-tab" id="tabInvoice" onclick="switchView('invoice')">
+        &#128196; Official Bill Receipt View
+      </button>
+    </div>
+
+    <!-- VIEW 1: CALCULATOR FORM VIEW -->
+    <div id="calculatorView">
+      
+      <!-- Active Tariff Slabs Section -->
+      <section class="tariffs-section">
+        <h2 class="section-title">&#128268; Specified Tariff Slabs &amp; Rates</h2>
+        <div class="tariff-grid">
+          
+          <div class="tariff-card slab-1">
+            <div class="slab-header">
+              <span class="slab-tag">Slab 1</span>
+              <span class="slab-range">0 &ndash; 50 Units</span>
+            </div>
+            <div class="slab-rate">Rs. 3.50 <span>/ unit</span></div>
+            <p class="slab-desc">Condition for first 50 units</p>
+          </div>
+
+          <div class="tariff-card slab-2">
+            <div class="slab-header">
+              <span class="slab-tag">Slab 2</span>
+              <span class="slab-range">51 &ndash; 150 Units</span>
+            </div>
+            <div class="slab-rate">Rs. 4.00 <span>/ unit</span></div>
+            <p class="slab-desc">Condition for next 100 units</p>
+          </div>
+
+          <div class="tariff-card slab-3">
+            <div class="slab-header">
+              <span class="slab-tag">Slab 3</span>
+              <span class="slab-range">151 &ndash; 250 Units</span>
+            </div>
+            <div class="slab-rate">Rs. 5.20 <span>/ unit</span></div>
+            <p class="slab-desc">Condition for next 100 units</p>
+          </div>
+
+          <div class="tariff-card slab-4">
+            <div class="slab-header">
+              <span class="slab-tag">Slab 4</span>
+              <span class="slab-range">Above 250 Units</span>
+            </div>
+            <div class="slab-rate">Rs. 6.50 <span>/ unit</span></div>
+            <p class="slab-desc">Condition for units &gt; 250</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Main Form & Live Preview Grid -->
+      <div class="main-grid">
+
+        <!-- Calculator Form Card -->
+        <section class="card">
+          <div class="card-header">
+            <h2>Consumer &amp; Consumption Details</h2>
+            <p>Enter consumer meter information to compute official monthly bill via JSP</p>
+          </div>
+
+          <!-- Quick Demo Presets -->
+          <div class="presets-box">
+            <span class="presets-label">&#9889; Quick Test Cases:</span>
+            <div class="preset-pills">
+              <button type="button" class="preset-pill" onclick="fillTestCase(35, 'Aarav Sharma')">
+                35 Units <span class="sub">(Slab 1)</span>
+              </button>
+              <button type="button" class="preset-pill" onclick="fillTestCase(120, 'Priya Patel')">
+                120 Units <span class="sub">(Slabs 1-2)</span>
+              </button>
+              <button type="button" class="preset-pill" onclick="fillTestCase(210, 'Swanand Uttarwar')">
+                210 Units <span class="sub">(Slabs 1-3)</span>
+              </button>
+              <button type="button" class="preset-pill" onclick="fillTestCase(320, 'Vikram Deshmukh')">
+                320 Units <span class="sub">(All Slabs)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- The Input Form -->
+          <form id="billForm" onsubmit="handleStaticSubmit(event)">
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="consumerName">Consumer Full Name <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <span class="input-icon">&#128100;</span>
+                  <input type="text" id="consumerName" name="consumerName" value="Swanand Uttarwar" required placeholder="e.g. Swanand Uttarwar">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="consumerId">Consumer Number / Account ID <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <span class="input-icon">&#128221;</span>
+                  <input type="text" id="consumerId" name="consumerId" value="CN-12414076" required placeholder="e.g. CN-104928">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="meterNumber">Meter Serial Number</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">&#9874;</span>
+                  <input type="text" id="meterNumber" name="meterNumber" value="MTR-88219" placeholder="e.g. MTR-88219">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="connectionType">Connection Tariff Category</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">&#127968;</span>
+                  <select id="connectionType" name="connectionType">
+                    <option value="Domestic (Residential)" selected>LT-I: Domestic (Residential)</option>
+                    <option value="Commercial (Non-Domestic)">LT-II: Commercial (Non-Domestic)</option>
+                    <option value="Industrial (Small &amp; Medium)">LT-III: Industrial (Small/Med)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="previousReading">Previous Meter Reading (kWh)</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">&#128392;</span>
+                  <input type="number" step="0.1" id="previousReading" name="previousReading" value="1250" placeholder="e.g. 1250">
+                </div>
+                <span class="helper-text">Optional: enter to auto-compute consumed units</span>
+              </div>
+
+              <div class="form-group">
+                <label for="currentReading">Current Meter Reading (kWh)</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">&#128392;</span>
+                  <input type="number" step="0.1" id="currentReading" name="currentReading" value="1460" placeholder="e.g. 1460">
+                </div>
+                <span class="helper-text">Must be &ge; Previous Reading</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="unitsConsumed">Total Units Consumed (kWh) <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <span class="input-icon">&#9889;</span>
+                <input type="number" step="0.1" id="unitsConsumed" name="unitsConsumed" value="210" min="0" required placeholder="e.g. 210">
+              </div>
+              <span class="helper-text">Units will be billed across the 4 tiered tariff slabs</span>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                <span>&#128196; Generate Official JSP Bill</span>
+              </button>
+              <button type="reset" class="btn btn-secondary" onclick="setTimeout(updateLivePreview, 50)">
+                <span>&#8634; Reset</span>
+              </button>
+            </div>
+
+          </form>
+
+        </section>
+
+        <!-- Live Preview Panel -->
+        <aside class="card preview-panel">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h2>Instant Calculation Preview</h2>
+              <p>Real-time client validation &amp; preview</p>
+            </div>
+            <span class="live-badge"><span class="pulse-dot"></span> Live</span>
+          </div>
+
+          <div class="preview-stat-card">
+            <div class="preview-stat-label">Estimated Bill Payable</div>
+            <div class="preview-stat-value" id="previewTotal">Rs. 983.85</div>
+            <div class="preview-stat-sub">Energy: <span id="previewEnergy">Rs. 887.00</span> + Fixed &amp; Taxes</div>
+          </div>
+
+          <h3 style="font-size: 14px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">
+            Slab-wise Units &amp; Amount:
+          </h3>
+
+          <div class="slab-breakdown-list">
+            
+            <div class="slab-item-row">
+              <div class="slab-item-info">
+                <span class="slab-circle s1"></span>
+                <div>
+                  <strong>Slab 1 (0&ndash;50 @ Rs. 3.50)</strong>
+                  <div style="font-size:12px; color:#94a3b8;" id="s1_units">50.0 units</div>
+                </div>
+              </div>
+              <span class="slab-item-cost" id="s1_cost">Rs. 175.00</span>
+            </div>
+
+            <div class="slab-item-row">
+              <div class="slab-item-info">
+                <span class="slab-circle s2"></span>
+                <div>
+                  <strong>Slab 2 (51&ndash;150 @ Rs. 4.00)</strong>
+                  <div style="font-size:12px; color:#94a3b8;" id="s2_units">100.0 units</div>
+                </div>
+              </div>
+              <span class="slab-item-cost" id="s2_cost">Rs. 400.00</span>
+            </div>
+
+            <div class="slab-item-row">
+              <div class="slab-item-info">
+                <span class="slab-circle s3"></span>
+                <div>
+                  <strong>Slab 3 (151&ndash;250 @ Rs. 5.20)</strong>
+                  <div style="font-size:12px; color:#94a3b8;" id="s3_units">60.0 units</div>
+                </div>
+              </div>
+              <span class="slab-item-cost" id="s3_cost">Rs. 312.00</span>
+            </div>
+
+            <div class="slab-item-row">
+              <div class="slab-item-info">
+                <span class="slab-circle s4"></span>
+                <div>
+                  <strong>Slab 4 (&gt; 250 @ Rs. 6.50)</strong>
+                  <div style="font-size:12px; color:#94a3b8;" id="s4_units">0.0 units</div>
+                </div>
+              </div>
+              <span class="slab-item-cost" id="s4_cost">Rs. 0.00</span>
+            </div>
+
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:#94a3b8; margin-bottom:4px;">
+              <span>Consumption Distribution</span>
+              <span>0 &rarr; 250+ units</span>
+            </div>
+            <div class="consumption-track">
+              <div class="track-seg s1" id="seg1" style="width: 20%;"></div>
+              <div class="track-seg s2" id="seg2" style="width: 40%;"></div>
+              <div class="track-seg s3" id="seg3" style="width: 24%;"></div>
+              <div class="track-seg s4" id="seg4" style="width: 0%;"></div>
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: OFFICIAL BILL INVOICE RECEIPT VIEW -->
+    <div id="invoiceView" class="hidden-view invoice-wrapper">
+      
+      <div class="invoice-actions-bar">
+        <div>
+          <button type="button" class="btn btn-secondary" onclick="switchView('calculator')">
+            <span>&larr; Calculate Another Bill</span>
+          </button>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-secondary" onclick="window.print()">
+            <span>&#128424; Print Invoice</span>
+          </button>
+          <button type="button" class="btn btn-primary" onclick="window.print()">
+            <span>&#128190; Save as PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="invoice-paper">
+        
+        <!-- Utility Brand Header -->
+        <div class="invoice-header">
+          <div class="utility-brand">
+            <div class="utility-logo">&#9889;</div>
+            <div>
+              <h2>MAHA-VIDYUT DISTRIBUTION CO.</h2>
+              <p>State Electricity Board &bull; Consumer Billing Division</p>
+              <p style="font-size: 11px; color:#64748b; margin-top:2px;">Reg. No: MSEB/PW/2026/WT-JSP &bull; GSTIN: 27AABCM9821Q1Z4</p>
+            </div>
+          </div>
+
+          <div class="invoice-meta">
+            <div class="invoice-num" id="inv_num">JSP-EB-884219</div>
+            <p><strong>Bill Issue Date:</strong> <span id="inv_date">24-Oct-2026</span></p>
+            <p><strong>Payment Due Date:</strong> <span id="inv_due">08-Nov-2026</span></p>
+            <div style="margin-top:6px;">
+              <span class="badge badge-success">&#10003; Generated via JSP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consumer Credentials Grid -->
+        <div class="bill-consumer-grid">
+          <div class="meta-field">
+            <span class="label">Consumer Full Name</span>
+            <span class="value" id="inv_name">Swanand Uttarwar</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Consumer Account ID</span>
+            <span class="value" id="inv_id">CN-12414076</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Meter Serial No.</span>
+            <span class="value" id="inv_meter">MTR-88219</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Tariff Connection Type</span>
+            <span class="value" id="inv_type">Domestic (Residential)</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Billing Month</span>
+            <span class="value">October 2026</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Previous Meter Reading</span>
+            <span class="value" id="inv_prev">1250.0 kWh</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Current Meter Reading</span>
+            <span class="value" id="inv_curr">1460.0 kWh</span>
+          </div>
+          <div class="meta-field">
+            <span class="label">Supply Voltage</span>
+            <span class="value">230V Single Phase</span>
+          </div>
+        </div>
+
+        <!-- Units Banner -->
+        <div class="units-banner">
+          <div>
+            <div class="units-text">Total Electricity Consumed in Billing Cycle</div>
+            <div style="font-size:12px; color:#64748b; margin-top:2px;">Meter Reading Difference = Current &minus; Previous</div>
+          </div>
+          <div class="units-num" id="inv_units">210.00 kWh (Units)</div>
+        </div>
+
+        <!-- Slab Breakdown Table -->
+        <h3 style="font-size: 15px; font-weight:800; color:#0f172a; text-transform:uppercase; margin-bottom:12px; letter-spacing:0.3px;">
+          &#9889; Tiered Tariff Slab Consumption &amp; Cost Breakdown
+        </h3>
+
+        <div class="invoice-table-wrapper">
+          <table class="invoice-table">
+            <thead>
+              <tr>
+                <th>Tariff Slab Classification</th>
+                <th class="num-col">Slab Rate</th>
+                <th class="num-col">Consumed Units</th>
+                <th class="num-col">Calculation Formula</th>
+                <th class="num-col">Slab Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="row_slab1" class="active-slab">
+                <td>
+                  <span class="slab-circle s1" style="display:inline-block; margin-right:6px;"></span>
+                  <strong>Slab 1:</strong> First 50 Units (0 &ndash; 50)
+                </td>
+                <td class="num-col">Rs. 3.50 / unit</td>
+                <td class="num-col" id="inv_s1_units">50.00 units</td>
+                <td class="num-col" id="inv_s1_calc">50.00 &times; Rs. 3.50</td>
+                <td class="num-col"><strong id="inv_s1_cost">Rs. 175.00</strong></td>
+              </tr>
+
+              <tr id="row_slab2" class="active-slab">
+                <td>
+                  <span class="slab-circle s2" style="display:inline-block; margin-right:6px;"></span>
+                  <strong>Slab 2:</strong> Next 100 Units (51 &ndash; 150)
+                </td>
+                <td class="num-col">Rs. 4.00 / unit</td>
+                <td class="num-col" id="inv_s2_units">100.00 units</td>
+                <td class="num-col" id="inv_s2_calc">100.00 &times; Rs. 4.00</td>
+                <td class="num-col"><strong id="inv_s2_cost">Rs. 400.00</strong></td>
+              </tr>
+
+              <tr id="row_slab3" class="active-slab">
+                <td>
+                  <span class="slab-circle s3" style="display:inline-block; margin-right:6px;"></span>
+                  <strong>Slab 3:</strong> Next 100 Units (151 &ndash; 250)
+                </td>
+                <td class="num-col">Rs. 5.20 / unit</td>
+                <td class="num-col" id="inv_s3_units">60.00 units</td>
+                <td class="num-col" id="inv_s3_calc">60.00 &times; Rs. 5.20</td>
+                <td class="num-col"><strong id="inv_s3_cost">Rs. 312.00</strong></td>
+              </tr>
+
+              <tr id="row_slab4">
+                <td>
+                  <span class="slab-circle s4" style="display:inline-block; margin-right:6px;"></span>
+                  <strong>Slab 4:</strong> Above 250 Units (&gt; 250)
+                </td>
+                <td class="num-col">Rs. 6.50 / unit</td>
+                <td class="num-col" id="inv_s4_units">0.00 units</td>
+                <td class="num-col" id="inv_s4_calc">0.00 &times; Rs. 6.50</td>
+                <td class="num-col"><strong id="inv_s4_cost">Rs. 0.00</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="invoice-summary">
+          
+          <div class="invoice-notes">
+            <h4>Payment Instructions &amp; Notes:</h4>
+            <ul>
+              <li>Calculated under Government Tariff Orders for LT Category consumers.</li>
+              <li>Tiered rate structure ensures progressive pricing per unit.</li>
+              <li>Pay on or before <strong id="inv_note_due">08-Nov-2026</strong> to avoid late surcharge.</li>
+            </ul>
+
+            <div class="qr-code-box">
+              <div class="qr-img">&#9638;</div>
+              <div class="qr-text">
+                <strong>Scan to Pay via UPI / QR</strong>
+                UPI ID: mahavidyut@sbi &bull; <span id="inv_qr_code">JSP-EB-884219</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="invoice-totals">
+            <div class="total-row">
+              <span>Energy Charges (Slabs Total)</span>
+              <span class="val" id="inv_energy">Rs. 887.00</span>
+            </div>
+
+            <div class="total-row">
+              <span>Fixed Meter / Service Charge</span>
+              <span class="val" id="inv_fixed">Rs. 50.00</span>
+            </div>
+
+            <div class="total-row">
+              <span>Electricity Duty / Tax (5%)</span>
+              <span class="val" id="inv_tax">Rs. 46.85</span>
+            </div>
+
+            <div class="total-row grand-total">
+              <span>Total Bill Payable</span>
+              <span class="val" id="inv_total">Rs. 983.85</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+          <p>This is a computer-generated tax invoice generated by <strong>JSP (JavaServer Pages) Web Application</strong>.</p>
+          <p>Web Technology Assignment 6 &bull; Developed by Swanand Uttarwar (SWANAND2025)</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="js/script.js"></script>
+  <script>
+    function switchView(view) {
+      const calcView = document.getElementById('calculatorView');
+      const invView = document.getElementById('invoiceView');
+      const tabCalc = document.getElementById('tabCalculator');
+      const tabInv = document.getElementById('tabInvoice');
+
+      if (view === 'invoice') {
+        calcView.classList.add('hidden-view');
+        invView.classList.remove('hidden-view');
+        tabCalc.classList.remove('active');
+        tabInv.classList.add('active');
+        populateInvoice();
+      } else {
+        invView.classList.add('hidden-view');
+        calcView.classList.remove('hidden-view');
+        tabInv.classList.remove('active');
+        tabCalc.classList.add('active');
+      }
+    }
+
+    function handleStaticSubmit(e) {
+      e.preventDefault();
+      switchView('invoice');
+    }
+
+    function populateInvoice() {
+      const name = document.getElementById('consumerName').value || 'Swanand Uttarwar';
+      const cid = document.getElementById('consumerId').value || 'CN-12414076';
+      const meter = document.getElementById('meterNumber').value || 'MTR-88219';
+      const type = document.getElementById('connectionType').value || 'Domestic (Residential)';
+      const prev = parseFloat(document.getElementById('previousReading').value) || 0;
+      const curr = parseFloat(document.getElementById('currentReading').value) || 0;
+      const units = Math.max(0, parseFloat(document.getElementById('unitsConsumed').value) || 0);
+
+      document.getElementById('inv_name').textContent = name;
+      document.getElementById('inv_id').textContent = cid;
+      document.getElementById('inv_meter').textContent = meter;
+      document.getElementById('inv_type').textContent = type;
+      document.getElementById('inv_prev').textContent = prev.toFixed(1) + ' kWh';
+      document.getElementById('inv_curr').textContent = curr.toFixed(1) + ' kWh';
+      document.getElementById('inv_units').textContent = units.toFixed(2) + ' kWh (Units)';
+
+      let remaining = units;
+      let s1 = Math.min(remaining, 50); remaining = Math.max(0, remaining - s1);
+      let s2 = Math.min(remaining, 100); remaining = Math.max(0, remaining - s2);
+      let s3 = Math.min(remaining, 100); remaining = Math.max(0, remaining - s3);
+      let s4 = remaining;
+
+      let c1 = s1 * 3.50;
+      let c2 = s2 * 4.00;
+      let c3 = s3 * 5.20;
+      let c4 = s4 * 6.50;
+
+      document.getElementById('inv_s1_units').textContent = s1.toFixed(2) + ' units';
+      document.getElementById('inv_s1_calc').textContent = s1.toFixed(2) + ' \u00D7 Rs. 3.50';
+      document.getElementById('inv_s1_cost').textContent = 'Rs. ' + c1.toFixed(2);
+
+      document.getElementById('inv_s2_units').textContent = s2.toFixed(2) + ' units';
+      document.getElementById('inv_s2_calc').textContent = s2.toFixed(2) + ' \u00D7 Rs. 4.00';
+      document.getElementById('inv_s2_cost').textContent = 'Rs. ' + c2.toFixed(2);
+
+      document.getElementById('inv_s3_units').textContent = s3.toFixed(2) + ' units';
+      document.getElementById('inv_s3_calc').textContent = s3.toFixed(2) + ' \u00D7 Rs. 5.20';
+      document.getElementById('inv_s3_cost').textContent = 'Rs. ' + c3.toFixed(2);
+
+      document.getElementById('inv_s4_units').textContent = s4.toFixed(2) + ' units';
+      document.getElementById('inv_s4_calc').textContent = s4.toFixed(2) + ' \u00D7 Rs. 6.50';
+      document.getElementById('inv_s4_cost').textContent = 'Rs. ' + c4.toFixed(2);
+
+      const energy = c1 + c2 + c3 + c4;
+      let fixed = 50.00;
+      if (type.toLowerCase().includes('commercial')) fixed = 100.00;
+      else if (type.toLowerCase().includes('industrial')) fixed = 250.00;
+
+      const tax = (energy + fixed) * 0.05;
+      const total = energy + fixed + tax;
+
+      document.getElementById('inv_energy').textContent = 'Rs. ' + energy.toFixed(2);
+      document.getElementById('inv_fixed').textContent = 'Rs. ' + fixed.toFixed(2);
+      document.getElementById('inv_tax').textContent = 'Rs. ' + tax.toFixed(2);
+      document.getElementById('inv_total').textContent = 'Rs. ' + total.toFixed(2);
+    }
+  </script>
+</body>
+</html>
